@@ -5,10 +5,11 @@ from module_manager import load_modules
 from kivy.app import App
 from kivy.uix.screenmanager import Screen, ScreenManager
 
-from kivy.uix.boxlayout import BoxLayout
+from kivy.uix.gridlayout import GridLayout
 from kivy.uix.scrollview import ScrollView
 
 from kivy.uix.button import Button
+from kivy.graphics import Color
 
 from kivy.config import Config
 Config.set("graphics", "fullscreen", "auto")
@@ -26,12 +27,12 @@ def select_module(instance):
 class MainAppScreen (Screen):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-
-        view = ScrollView()
-        layout = BoxLayout(orientation='vertical', spacing = 10, padding = 15)
+        view = ScrollView(do_scroll_x = False, do_scroll_y = True)
+        layout = GridLayout(cols = 1, spacing = 10, padding = 10, size_hint_y = None)
+        layout.bind(minimum_height=layout.setter('height'))
 
         for i in range(len(modules)):
-            button = ModuleSelectButton(ind = i, text = modules[i].get_info()[0])
+            button = ModuleSelectButton(ind = i, text = (modules[i].get_info()[0] + ": " + modules[i].get_info()[1]), size_hint_y = None, height = 100)
             button.bind(on_press = select_module)
             layout.add_widget(button)
         
@@ -44,10 +45,16 @@ class ModuleSelectButton (Button):
         super().__init__(**kwargs)
         self.bind(on_press = select_module)
 
+        self.background_normal = ""
+        if self.i%2 == 0:
+            self.background_color = (0.35, 0.35, 0.35, 1)
+        else:
+            self.background_color = (0.4, 0.4, 0.4, 1)
+
 class DeskThing (App):
     def build(self):
-        sm = ScreenManager()
         global screen
+        sm = ScreenManager()
         screen = MainAppScreen()
         sm.add_widget(screen)
         return sm
