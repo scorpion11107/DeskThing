@@ -3,7 +3,7 @@
 from module_manager import load_modules
 
 from kivy.app import App
-from kivy.uix.screenmanager import Screen, ScreenManager
+from kivy.uix.screenmanager import Screen, ScreenManager, SlideTransition
 
 from kivy.uix.gridlayout import GridLayout
 from kivy.uix.scrollview import ScrollView
@@ -32,7 +32,10 @@ class MainAppScreen (Screen):
         layout.bind(minimum_height=layout.setter('height'))
 
         for i in range(len(modules)):
-            button = ModuleSelectButton(ind = i, text = (modules[i].get_info()[0] + ": " + modules[i].get_info()[1]), size_hint_y = None, height = 100)
+            info = modules[i].get_info()
+            button = ModuleSelectButton(ind = i,
+                text = (info[0] + ": " + info[1]),
+                size_hint_y = None)
             button.bind(on_press = select_module)
             layout.add_widget(button)
         
@@ -54,7 +57,7 @@ class ModuleSelectButton (Button):
 class DeskThing (App):
     def build(self):
         global screen
-        sm = ScreenManager()
+        sm = ScreenManager(transition = SlideTransition(duration=0.2))
         screen = MainAppScreen()
         sm.add_widget(screen)
         return sm
