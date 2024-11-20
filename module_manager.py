@@ -45,7 +45,7 @@ def load_module(path):
     # Creates a module from a module file's path
     from json import load
     f = load(open("modules/"+path, "r"))
-    name = f["module_name"]
-    description = f["module_description"]
-    main_command = f["main_file_path"]
+    name = f["name"]
+    description = f["description"]
+    main_command = f["path"]
     return Module(name, description, main_command)

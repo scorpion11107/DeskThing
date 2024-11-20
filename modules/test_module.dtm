@@ -1,0 +1,5 @@
+{
+    "name": "Test",
+    "description": "A simple module for testing",
+    "path": "modules/test.py"
+}

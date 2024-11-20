@@ -6,6 +6,7 @@ from kivy.app import App
 from kivy.uix.screenmanager import Screen, ScreenManager
 
 from kivy.uix.boxlayout import BoxLayout
+from kivy.uix.scrollview import ScrollView
 
 from kivy.uix.button import Button
 
@@ -26,6 +27,7 @@ class MainAppScreen (Screen):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
+        view = ScrollView()
         layout = BoxLayout(orientation='vertical', spacing = 10, padding = 15)
 
         for i in range(len(modules)):
@@ -33,7 +35,8 @@ class MainAppScreen (Screen):
             button.bind(on_press = select_module)
             layout.add_widget(button)
         
-        self.add_widget(layout)
+        view.add_widget(layout)
+        self.add_widget(view)
 
 class ModuleSelectButton (Button):
     def __init__(self, ind, **kwargs):
