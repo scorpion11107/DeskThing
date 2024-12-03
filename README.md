@@ -1,6 +1,6 @@
 # Instalation
 
-Simply clone the repository or download the latest release and copy the files in your prefered folder.
+Simply clone the repository or download the latest release and copy the files in your prefered directory.
 
 **Launching**
 
@@ -12,10 +12,10 @@ You need to have Python installed.
 
 **Adding any module is quite simple:**
 - download any files necessary from the module's github page / website
-- move the DTM file to the 'modules' folder
+- move the DTM file and the main directory to the *'modules'* directory
 - folow any other instalation process specified by the module's editor
 
-*Remember that we do not provide any waranty of security for installed modules.*
+*Remember that we do not provide any waranty of 'working as intended' or of security for installed modules.*
 
 # Creating a module
 
