@@ -21,12 +21,14 @@ You need to have Python installed.
 
 DeskThing offers a simple way of creating basic modules, but more complex ones may require a consequent amount of work.
 
+Modules should be published under the MIT License.
+
 The basic file structure is as follows:
 ```
 Modules
-├── module_name.dtm
-│   module_name
-│   ├── name_of_main_file.py
+├── module_id.dtm
+│   module_id
+│   ├── module_id.py
 │   └── any other files of the module
 ```
 
@@ -34,7 +36,18 @@ The main DTM file should look like this, with a JSON syntax:
 ``` json
 {
     "name": "", // the name of the module
+    "id": "", // the 'module ID'
     "description": "", // a shot description of the module
     "path": "" // the relative path to the main python file
+}
+```
+
+Here is an example:
+``` json
+{
+    "name": "Example module", // can have capital letters, spaces, dashes and underscores
+    "id": "example_module", // can only have lowercase letters and underscores
+    "description": "An example module, made for the documentation",
+    "path": "modules/example_module/example_module.py"
 }
 ```
