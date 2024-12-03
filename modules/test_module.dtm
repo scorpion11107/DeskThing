@@ -1,5 +1,5 @@
 {
-    "name": "Test",
-    "description": "A simple module for testing",
-    "path": "modules/test.py"
+    "id": "example_module",
+    "name": "Example module",
+    "description": "An example module, made for the documentation"
 }

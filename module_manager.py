@@ -1,11 +1,15 @@
 class Module():
-    def __init__(self, name, description, main_file_path) -> None:
+    def __init__(self, id, name, description) -> None:
+        self.id = id
         self.name = name
         self.desc = description
-        self.path = main_file_path
+        self.path = "modules/" + self.id + "/" + self.id + ".py"
+    
+    def __repr__(self) -> str:
+        return self.id
     
     def get_info(self):
-        return self.name, self.desc, self.path
+        return self.id, self.name, self.desc
     
     def run(self):
         import importlib.util
@@ -25,7 +29,7 @@ def load_modules():
     return modules
 
 def get_files_list():
-    # Returns a list of all files in the modules folder
+    # Returns a list of all files in the modules directory
     from os import listdir, getcwd
     from os.path import isfile, join
     cwd = getcwd()
@@ -44,8 +48,8 @@ def get_modules_files(list):
 def load_module(path):
     # Creates a module from a module file's path
     from json import load
-    f = load(open("modules/"+path, "r"))
+    f = load(open("modules/" + path, "r"))
+    id = f["id"]
     name = f["name"]
     description = f["description"]
-    main_command = f["path"]
-    return Module(name, description, main_command)
+    return Module(id, name, description)

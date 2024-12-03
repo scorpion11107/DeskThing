@@ -60,7 +60,7 @@ Modules
 {
     "id": "example_module", // can only have lowercase letters and underscores
     "name": "Example module", // can have uppercase letters, spaces, dashes and underscores; basically a 'display name'
-    "description": "An example module, made for the documentation", // same limitations as the name
+    "description": "An example module, made for the documentation" // same limitations as the name
 }
 ```
 
