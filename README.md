@@ -35,19 +35,45 @@ Modules
 The main DTM file should look like this, with a JSON syntax:
 ``` json
 {
+    "id": "", // the 'module_id'
     "name": "", // the name of the module
-    "id": "", // the 'module ID'
-    "description": "", // a shot description of the module
-    "path": "" // the relative path to the main python file
+    "description": "", // a short description of the module
 }
 ```
 
-Here is an example:
+The main python file needs to have some important things:
+- a *'get_main_screen'* function that returns a Kivy screen
+- a *'MainScreen'* class that extends the Kivy screen class
+
+**Here is an example:**
+
+*File structure:*
+```
+Modules
+├── example_module.dtm
+│   example_module
+│   └── example_module.py
+```
+
+*example_module.dtm:*
 ``` json
 {
-    "name": "Example module", // can have capital letters, spaces, dashes and underscores
     "id": "example_module", // can only have lowercase letters and underscores
-    "description": "An example module, made for the documentation",
-    "path": "modules/example_module/example_module.py"
+    "name": "Example module", // can have uppercase letters, spaces, dashes and underscores; basically a 'display name'
+    "description": "An example module, made for the documentation", // same limitations as the name
 }
+```
+
+*example_module.py:*
+``` python
+from kivy.uix.screenmanager import Screen
+from kivy.uix.label import Label
+
+def get_main_screen():
+    return MainScreen()
+
+class MainScreen (Screen):
+    def __init__(self, **kw):
+        super().__init__(**kw)
+        self.add_widget(Label(text="Welcome to the Example Module"))
 ```
