@@ -23,6 +23,8 @@ DeskThing offers a simple way of creating basic modules, but more complex ones m
 
 Modules should be published under the MIT License.
 
+### Basic module
+
 The basic file structure is as follows:
 ```
 Modules
@@ -77,3 +79,5 @@ class MainScreen (Screen):
         super().__init__(**kw)
         self.add_widget(Label(text="Welcome to the Example Module"))
 ```
+
+### More complex module
