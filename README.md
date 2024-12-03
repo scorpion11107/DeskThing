@@ -6,7 +6,7 @@ Simply clone the repository or download the latest release and copy the files in
 
 You need to have Python installed.
 - On Windows, simply launch the Main.pyw file
-- On linux, open a terminal in the directory which holds the main files and run ```python3 Main.pyw```
+- On Linux, open a terminal in the directory which holds the main files and run ```python3 Main.pyw```
 
 # Adding modules
 
