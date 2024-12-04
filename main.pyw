@@ -10,6 +10,7 @@ from kivy.uix.gridlayout import GridLayout
 from kivy.uix.scrollview import ScrollView
 
 from kivy.uix.button import Button
+from kivy.graphics import *
 
 from kivy.config import Config
 Config.set("graphics", "fullscreen", "auto")
@@ -46,8 +47,12 @@ class SelectModuleScreen (Screen):
 class Footer (FloatLayout):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        
+
         self.add_widget(CloseButton(text = "Close"))
+        
+        with self.canvas:
+            Color(1, 1, 1)
+            Rectangle(pos=self.pos, size=self.size)
 
 class CloseButton (Button):
     def __init__(self, **kwargs):
@@ -64,7 +69,7 @@ class MainAppScreen (Screen):
         for j in range(100):
             for i in range(len(modules)):
                 info = modules[i].get_info()
-                button = ModuleSelectButton(ind = j,
+                button = ModuleSelectButton(ind = i,
                     text = (info[0] + ": " + info[1]),
                     size_hint_y = None)
                 layout.add_widget(button)
