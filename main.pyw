@@ -75,9 +75,10 @@ class BatteryLabel (Label):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
-        Clock.schedule_interval(self.display_battery, 10)
+        Clock.schedule_interval(lambda dt: self.display_battery(), 10)
+        self.display_battery()
 
-    def display_battery(self, test):
+    def display_battery(self):
         import psutil
         battery = psutil.sensors_battery()
         percent = battery.percent
