@@ -61,7 +61,7 @@ class Footer (FloatLayout):
         layout = GridLayout(cols = 2, spacing = 10)
 
         layout.add_widget(CloseButton(text = "Close"))
-        layout.add_widget(BatteryLabel())
+        layout.add_widget(StatusLabel())
 
         self.add_widget(layout)
         
@@ -71,19 +71,28 @@ class CloseButton (Button):
         super().__init__(**kwargs)
         self.bind(on_press = exit)
 
-class BatteryLabel (Label):
+class StatusLabel (Label):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
-        Clock.schedule_interval(lambda dt: self.display_battery(), 10)
-        self.display_battery()
+        self.halign = "center"
+        self.valign = "center"
 
-    def display_battery(self):
-        import psutil
-        battery = psutil.sensors_battery()
+        Clock.schedule_interval(lambda dt: self.update(), 10)
+        self.update()
+    
+    def update(self):
+        from psutil import sensors_battery
+        from datetime import datetime
+        battery = sensors_battery()
+
         percent = battery.percent
         plugged = "Plugged" if battery.power_plugged else "Unplugged"
-        self.text = (str(percent) + ' | ' + str(plugged))
+        battery_text = (str(percent) + '% | ' + str(plugged))
+
+        date_time = datetime.now()
+        time_text = date_time.strftime("%x") + " - " + date_time.strftime("%H") + ":" + date_time.strftime("%M")
+        self.text = time_text + "\n" + battery_text
 
 class MainAppScreen (Screen):
     def __init__(self, **kwargs):
