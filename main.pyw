@@ -5,16 +5,22 @@ from module_manager import load_modules
 from kivy.app import App
 from kivy.uix.screenmanager import Screen, ScreenManager, SlideTransition
 
+from kivy.clock import Clock
+
 from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.gridlayout import GridLayout
 from kivy.uix.scrollview import ScrollView
 
 from kivy.uix.button import Button
+from kivy.uix.label import Label
 from kivy.graphics import *
 
 from kivy.config import Config
 Config.set("graphics", "fullscreen", "auto")
-Config.set("kivy", "log_level", "error")
+Config.set("kivy", "log_level", "warning")
+
+from kivy.core.window import Window
+window_size = [Window.size[i] for i in range(2)]
 
 ###    Logic functions    ###
 
@@ -48,16 +54,35 @@ class Footer (FloatLayout):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
-        self.add_widget(CloseButton(text = "Close"))
-        
         with self.canvas:
-            Color(1, 1, 1)
-            Rectangle(pos=self.pos, size=self.size)
+            Color(0, 0, 0)
+            Rectangle(pos = [0, 0], size = [window_size[0], window_size[1]*0.045])
+        
+        layout = GridLayout(cols = 2, spacing = 10)
+
+        layout.add_widget(CloseButton(text = "Close"))
+        layout.add_widget(BatteryLabel())
+
+        self.add_widget(layout)
+        
 
 class CloseButton (Button):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.bind(on_press = exit)
+
+class BatteryLabel (Label):
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+
+        Clock.schedule_interval(self.display_battery, 10)
+
+    def display_battery(self, test):
+        import psutil
+        battery = psutil.sensors_battery()
+        percent = battery.percent
+        plugged = "Plugged" if battery.power_plugged else "Unplugged"
+        self.text = (str(percent) + ' | ' + str(plugged))
 
 class MainAppScreen (Screen):
     def __init__(self, **kwargs):
@@ -91,6 +116,7 @@ class ModuleSelectButton (Button):
 
 class DeskThing (App):
     def build(self):
+
         window = SelectModuleScreen()
         return window
 
