@@ -57,14 +57,17 @@ class MainScreen (Screen):
         layout.add_widget(footer)
 
         self.add_widget(layout)
+        self.add_widget(MyKeyboardListener())
 
 class Footer (GridLayout):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
+        self.size = [window_size[0], window_size[1]*0.045]
+
         with self.canvas:
             Color(0.15, 0.15, 0.15)
-            Rectangle(pos = [0, 0], size = [window_size[0], window_size[1]*0.045])
+            Rectangle(pos = [0, 0], size = self.size)
         
         self.cols = 3
         self.spacing = 10
@@ -107,37 +110,6 @@ class StatusLabel (GridLayout):
                      date_time.strftime("%x"))
         self.add_widget(Label(text = time_text))
 
-class HomeScreen (Screen):
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-        view = ScrollView(do_scroll_x = False, do_scroll_y = True)
-        layout = GridLayout(cols = 2, spacing = 10, padding = 10, size_hint_y = None)
-        layout.bind(minimum_height=layout.setter('height'))
-
-        for j in range(100):
-            for i in range(len(modules)):
-                info = modules[i].get_info()
-                button = ModuleSelectButton(function = select_module,
-                    ind = i,
-                    text = (info[1] + ": " + info[2]),
-                    size_hint_y = None)
-                layout.add_widget(button)
-        
-        view.add_widget(layout)
-        self.add_widget(view)
-        self.add_widget(MyKeyboardListener())
-
-class ModuleSelectButton (CoreButton):
-    def __init__(self, ind, **kwargs):
-        self.i = ind
-        super().__init__(**kwargs)
-
-        self.background_normal = ""
-        if self.i%2 == 0:
-            self.background_color = (0.35, 0.35, 0.35, 1)
-        else:
-            self.background_color = (0.4, 0.4, 0.4, 1)
-
 class MyKeyboardListener(Widget):
 
     def __init__(self, **kwargs):
@@ -156,9 +128,7 @@ class MyKeyboardListener(Widget):
         self._keyboard = None
 
     def _on_keyboard_down(self, keyboard, keycode, text, modifiers):
-        print('The key', keycode, 'have been pressed')
-        print(' - text is %r' % text)
-        print(' - modifiers are %r' % modifiers)
+        print('Keycode:', keycode[0], "\tKey:", keycode[1])
 
         # Keycode is composed of an integer + a string
         # If we hit escape, release the keyboard
@@ -168,6 +138,36 @@ class MyKeyboardListener(Widget):
         # Return True to accept the key. Otherwise, it will be used by
         # the system.
         return True
+
+class HomeScreen (Screen):
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        view = ScrollView(do_scroll_x = False, do_scroll_y = True)
+        layout = GridLayout(cols = 2, spacing = 10, padding = 10, size_hint_y = None)
+        layout.bind(minimum_height=layout.setter('height'))
+
+        for j in range(100):
+            for i in range(len(modules)):
+                info = modules[i].get_info()
+                button = ModuleSelectButton(function = select_module,
+                    ind = i,
+                    text = (info[1] + ": " + info[2]),
+                    size_hint_y = None)
+                layout.add_widget(button)
+        
+        view.add_widget(layout)
+        self.add_widget(view)
+
+class ModuleSelectButton (CoreButton):
+    def __init__(self, ind, **kwargs):
+        self.i = ind
+        super().__init__(**kwargs)
+
+        self.background_normal = ""
+        if self.i%2 == 0:
+            self.background_color = (0.35, 0.35, 0.35, 1)
+        else:
+            self.background_color = (0.4, 0.4, 0.4, 1)
 
 class DeskThing (App):
     def build(self):
