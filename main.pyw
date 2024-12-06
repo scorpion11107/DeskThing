@@ -1,6 +1,7 @@
 ###    Imports    ###
 
 from module_manager import load_modules
+from core_classes import CoreButton
 
 from kivy.app import App
 from kivy.uix.screenmanager import Screen, ScreenManager, SlideTransition
@@ -11,16 +12,14 @@ from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.gridlayout import GridLayout
 from kivy.uix.scrollview import ScrollView
 
-from kivy.uix.button import Button
 from kivy.uix.label import Label
 from kivy.graphics import *
 
 from kivy.config import Config
 Config.set("graphics", "fullscreen", "auto")
-Config.set("kivy", "log_level", "warning")
 
 from kivy.core.window import Window
-window_size = [Window.size[i] for i in range(2)]
+window_size = Window.size
 
 ###    Logic functions    ###
 
@@ -30,53 +29,61 @@ def select_module(instance):
     global screen
     screen.manager.switch_to(modules[instance.i].run())
 
+def show_cursor():
+    Window.show_cursor = True
+
+def hide_cursor():
+    Window.show_cursor = False
+
 ###    Graphic classes    ###
 
-class SelectModuleScreen (Screen):
+class MainScreen (Screen):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
         layout = FloatLayout()
 
         global screen
-        sm = ScreenManager(transition = SlideTransition(duration=0.2), size_hint = (1, 0.96), pos_hint = {"x": 0, "y": 0.04})
-        screen = MainAppScreen()
-        sm.add_widget(screen)
+        sm = ScreenManager(transition = SlideTransition(duration=0.2),
+                           size_hint = (1, 0.96),
+                           pos_hint = {"x": 0, "y": 0.04})
+        sm.add_widget(HomeScreen())
         layout.add_widget(sm)
 
         footer = Footer(size_hint = (1, 0.04))
-
         layout.add_widget(footer)
 
         self.add_widget(layout)
 
-class Footer (FloatLayout):
+class Footer (GridLayout):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
         with self.canvas:
-            Color(0, 0, 0)
+            Color(0.15, 0.15, 0.15)
             Rectangle(pos = [0, 0], size = [window_size[0], window_size[1]*0.045])
         
-        layout = GridLayout(cols = 2, spacing = 10)
+        self.cols = 3
+        self.spacing = 10
 
-        layout.add_widget(CloseButton(text = "Close"))
-        layout.add_widget(StatusLabel())
+        self.add_widget(CloseButton(function = exit, text = "Close"))
+        self.add_widget(SwitchModeButton(function = lambda button: hide_cursor(),
+                                         text = "Switch mode"))
+        self.add_widget(StatusLabel())
 
-        self.add_widget(layout)
-        
+class SwitchModeButton (CoreButton):
+    def __init__(self, function, **kwargs):
+        super().__init__(function, **kwargs)
 
-class CloseButton (Button):
+class CloseButton (CoreButton):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.bind(on_press = exit)
 
-class StatusLabel (Label):
+class StatusLabel (GridLayout):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
-        self.halign = "center"
-        self.valign = "center"
+        self.cols = 1
 
         Clock.schedule_interval(lambda dt: self.update(), 10)
         self.update()
@@ -84,17 +91,20 @@ class StatusLabel (Label):
     def update(self):
         from psutil import sensors_battery
         from datetime import datetime
-        battery = sensors_battery()
 
+        battery = sensors_battery()
         percent = battery.percent
         plugged = "Plugged" if battery.power_plugged else "Unplugged"
         battery_text = (str(percent) + '% | ' + str(plugged))
+        self.add_widget(Label(text = battery_text))
 
         date_time = datetime.now()
-        time_text = date_time.strftime("%x") + " - " + date_time.strftime("%H") + ":" + date_time.strftime("%M")
-        self.text = time_text + "\n" + battery_text
+        time_text = (date_time.strftime("%H") + ":" +
+                     date_time.strftime("%M") + " - " +
+                     date_time.strftime("%x"))
+        self.add_widget(Label(text = time_text))
 
-class MainAppScreen (Screen):
+class HomeScreen (Screen):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         view = ScrollView(do_scroll_x = False, do_scroll_y = True)
@@ -104,19 +114,19 @@ class MainAppScreen (Screen):
         for j in range(100):
             for i in range(len(modules)):
                 info = modules[i].get_info()
-                button = ModuleSelectButton(ind = i,
-                    text = (info[0] + ": " + info[1]),
+                button = ModuleSelectButton(function = select_module,
+                    ind = i,
+                    text = (info[1] + ": " + info[2]),
                     size_hint_y = None)
                 layout.add_widget(button)
         
         view.add_widget(layout)
         self.add_widget(view)
 
-class ModuleSelectButton (Button):
+class ModuleSelectButton (CoreButton):
     def __init__(self, ind, **kwargs):
         self.i = ind
         super().__init__(**kwargs)
-        self.bind(on_press = select_module)
 
         self.background_normal = ""
         if self.i%2 == 0:
@@ -127,7 +137,7 @@ class ModuleSelectButton (Button):
 class DeskThing (App):
     def build(self):
 
-        window = SelectModuleScreen()
+        window = MainScreen()
         return window
 
 if __name__ == "__main__":
