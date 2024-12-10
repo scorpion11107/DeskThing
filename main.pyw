@@ -1,6 +1,7 @@
 ###    Imports    ###
 
 from module_manager import load_modules
+from input_controller import InputController
 from core_classes import CoreButton
 
 from kivy.app import App
@@ -57,7 +58,7 @@ class MainScreen (Screen):
         layout.add_widget(footer)
 
         self.add_widget(layout)
-        self.add_widget(MyKeyboardListener())
+        self.add_widget(InputController(window = Window))
 
 class Footer (GridLayout):
     def __init__(self, **kwargs):
@@ -97,6 +98,7 @@ class StatusLabel (GridLayout):
     def update(self):
         from psutil import sensors_battery
         from datetime import datetime
+        self.clear_widgets()
 
         battery = sensors_battery()
         percent = battery.percent
@@ -109,35 +111,6 @@ class StatusLabel (GridLayout):
                      date_time.strftime("%M") + " - " +
                      date_time.strftime("%x"))
         self.add_widget(Label(text = time_text))
-
-class MyKeyboardListener(Widget):
-
-    def __init__(self, **kwargs):
-        super(MyKeyboardListener, self).__init__(**kwargs)
-        self._keyboard = Window.request_keyboard(
-            self._keyboard_closed, self, 'text')
-        if self._keyboard.widget:
-            # If it exists, this widget is a VKeyboard object which you can use
-            # to change the keyboard layout.
-            pass
-        self._keyboard.bind(on_key_down=self._on_keyboard_down)
-
-    def _keyboard_closed(self):
-        print('My keyboard have been closed!')
-        self._keyboard.unbind(on_key_down=self._on_keyboard_down)
-        self._keyboard = None
-
-    def _on_keyboard_down(self, keyboard, keycode, text, modifiers):
-        print('Keycode:', keycode[0], "\tKey:", keycode[1])
-
-        # Keycode is composed of an integer + a string
-        # If we hit escape, release the keyboard
-        if keycode[1] == 'escape':
-            keyboard.release()
-
-        # Return True to accept the key. Otherwise, it will be used by
-        # the system.
-        return True
 
 class HomeScreen (Screen):
     def __init__(self, **kwargs):
