@@ -28,14 +28,12 @@ window_size = Window.size
 modules = load_modules()
 
 def select_module(instance):
-    global current_screen
-    current_screen.manager.switch_to(modules[instance.i].run())
+    global screen_manager
+    screen_manager.switch_to(modules[instance.i].run())
 
-def show_cursor():
-    Window.show_cursor = True
-
-def hide_cursor():
-    Window.show_cursor = False
+def home(instance):
+    global screen_manager, home_screen
+    screen_manager.switch_to(home_screen)
 
 ###    Graphic classes    ###
 
@@ -43,15 +41,18 @@ class MainScreen (Screen):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
-        global current_screen
-        current_screen = HomeScreen()
+        global home_screen
+        home_screen = HomeScreen()
 
-        layout = FloatLayout()
-
+        global screen_manager
         sm = ScreenManager(transition = SlideTransition(duration=0.2),
                            size_hint = (1, 0.96),
                            pos_hint = {"x": 0, "y": 0.04})
-        sm.add_widget(current_screen)
+        screen_manager = sm
+
+        sm.add_widget(home_screen)
+
+        layout = FloatLayout()
         layout.add_widget(sm)
 
         footer = Footer(size_hint = (1, 0.04))
@@ -73,12 +74,11 @@ class Footer (GridLayout):
         self.cols = 3
         self.spacing = 10
 
+        self.add_widget(HomeButton(function = home, text = "Home"))
         self.add_widget(CloseButton(function = exit, text = "Close"))
-        self.add_widget(SwitchModeButton(function = lambda button: hide_cursor(),
-                                         text = "Switch mode"))
         self.add_widget(StatusLabel())
 
-class SwitchModeButton (CoreButton):
+class HomeButton (CoreButton):
     def __init__(self, function, **kwargs):
         super().__init__(function, **kwargs)
 
@@ -115,6 +115,7 @@ class StatusLabel (GridLayout):
 class HomeScreen (Screen):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
+
         view = ScrollView(do_scroll_x = False, do_scroll_y = True)
         layout = GridLayout(cols = 2, spacing = 10, padding = 10, size_hint_y = None)
         layout.bind(minimum_height=layout.setter('height'))
