@@ -1,7 +1,6 @@
 ###    Imports    ###
 
 from module_manager import load_modules
-from input_controller import InputController
 from core_classes import CoreButton
 
 from kivy.app import App
@@ -45,7 +44,7 @@ class MainScreen (Screen):
         home_screen = HomeScreen()
 
         global screen_manager
-        sm = ScreenManager(transition = SlideTransition(duration=0.2),
+        sm = ScreenManager(transition = SlideTransition(duration = 0.2),
                            size_hint = (1, 0.96),
                            pos_hint = {"x": 0, "y": 0.04})
         screen_manager = sm
@@ -59,7 +58,6 @@ class MainScreen (Screen):
         layout.add_widget(footer)
 
         self.add_widget(layout)
-        self.add_widget(InputController(window = Window))
 
 class Footer (GridLayout):
     def __init__(self, **kwargs):
