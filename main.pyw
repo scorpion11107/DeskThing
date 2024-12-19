@@ -1,7 +1,11 @@
 ###    Imports    ###
 
 from module_manager import load_modules
+
 from core_classes import CoreButton
+from core_classes import CoreGrid
+
+from focus_manager import FocusManager
 
 from kivy.app import App
 from kivy.uix.screenmanager import Screen, ScreenManager, SlideTransition
@@ -9,7 +13,7 @@ from kivy.uix.screenmanager import Screen, ScreenManager, SlideTransition
 from kivy.clock import Clock
 
 from kivy.uix.floatlayout import FloatLayout
-from kivy.uix.gridlayout import GridLayout
+from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.scrollview import ScrollView
 
 from kivy.uix.widget import Widget
@@ -34,14 +38,19 @@ def home(instance):
     global screen_manager, home_screen
     screen_manager.switch_to(home_screen)
 
+def settings(instance):
+    global screen_manager, settings_screen
+    screen_manager.switch_to(settings_screen)
+
 ###    Graphic classes    ###
 
 class MainScreen (Screen):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
-        global home_screen
+        global home_screen, settings_screen
         home_screen = HomeScreen()
+        settings_screen = SettingsScreen()
 
         global screen_manager
         sm = ScreenManager(transition = SlideTransition(duration = 0.2),
@@ -49,7 +58,7 @@ class MainScreen (Screen):
                            pos_hint = {"x": 0, "y": 0.04})
         screen_manager = sm
 
-        sm.add_widget(home_screen)
+        sm.switch_to(home_screen)
 
         layout = FloatLayout()
         layout.add_widget(sm)
@@ -58,8 +67,9 @@ class MainScreen (Screen):
         layout.add_widget(footer)
 
         self.add_widget(layout)
+        self.add_widget(FocusManager(screen_manager = sm))
 
-class Footer (GridLayout):
+class Footer (CoreGrid):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
@@ -69,26 +79,31 @@ class Footer (GridLayout):
             Color(0.15, 0.15, 0.15)
             Rectangle(pos = [0, 0], size = self.size)
         
-        self.cols = 3
+        self.cols = 4
         self.spacing = 10
 
+        self.add_widget(CloseButton(function = exit, text = "Close", size_hint_x = None, width = 200))
         self.add_widget(HomeButton(function = home, text = "Home"))
-        self.add_widget(CloseButton(function = exit, text = "Close"))
+        self.add_widget(SettingsButton(function = settings, text = "Settings"))
         self.add_widget(StatusLabel())
+
+class CloseButton (CoreButton):
+    def __init__(self, function, **kwargs):
+        super().__init__(function, **kwargs)
 
 class HomeButton (CoreButton):
     def __init__(self, function, **kwargs):
         super().__init__(function, **kwargs)
 
-class CloseButton (CoreButton):
+class SettingsButton (CoreButton):
+    def __init__(self, function, **kwargs):
+        super().__init__(function, **kwargs)
+
+class StatusLabel (BoxLayout):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
-class StatusLabel (GridLayout):
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-
-        self.cols = 1
+        self.orientation = "vertical"
 
         Clock.schedule_interval(lambda dt: self.update(), 10)
         self.update()
@@ -115,7 +130,7 @@ class HomeScreen (Screen):
         super().__init__(**kwargs)
 
         view = ScrollView(do_scroll_x = False, do_scroll_y = True)
-        layout = GridLayout(cols = 2, spacing = 10, padding = 10, size_hint_y = None)
+        layout = CoreGrid(cols = 2, spacing = 10, padding = 10, size_hint_y = None)
         layout.bind(minimum_height=layout.setter('height'))
 
         for j in range(100):
@@ -140,6 +155,10 @@ class ModuleSelectButton (CoreButton):
             self.background_color = (0.35, 0.35, 0.35, 1)
         else:
             self.background_color = (0.4, 0.4, 0.4, 1)
+
+class SettingsScreen (Screen):
+    def __init__(self, **kw):
+        super().__init__(**kw)
 
 class DeskThing (App):
     def build(self):
